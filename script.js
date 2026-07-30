@@ -36,38 +36,19 @@ function howPicked(data, order) {
             songNameList.push([data.songs[x].name, daysApart(data.songs[x].date4), daysApart(data.songs[x].date3), daysApart(data.songs[x].date2), daysApart(data.songs[x].date1)])
         }
     if (order > 0) {
-        console.log('unused to popular');
         songNameList.sort((a, b) => {
             return a[1] - b[1];
         }) 
-        console.log('HI ', songNameList)
 
     } else if (order < 0) {
-        console.log('most popular first')
         songNameList.sort((a, b) => {
             return b[1] - a[1];
         })
     } else {
-        console.log('even')
     }
-    for (x = 0; x < songNameList.length; x++) {
-        function negNames() {
-            if (songNameList[x][1] === 1000) {
-                songNameList[x][1] = "Not Used Yet"
-                return "Not Used Yet"
-            } else { 
-                return (songNameList[x][1] + " days")
-            }
-        }
-        let newLi = document.createElement('li');
-        newLi.id = x;
-        ul.appendChild(newLi);
-        newLi.innerHTML = (songNameList[x][0] + " : " + negNames());
-    }
+    return songNameList;
 }
 function songOrder(data, num1, num2) {
-    console.log(num1)
-    console.log(num2)
     songNameList = []
     for (x = 0; x < data.songs.length; x++) {
         if (data.songs[x].songOrder >= num1 && data.songs[x].songOrder < num2) {
@@ -76,9 +57,65 @@ function songOrder(data, num1, num2) {
     }
     return songNameList
 }
-showAll.addEventListener('click', async function populateAll() {
+function negNames(source) {
+    if (source === 1000 || source === undefined) {
+        return "Not Used Yet"
+    } else { 
+        return (source + " days ago")
+    }
+}
+async function populateAll() {
+    ul.innerHTML = "";
     const data = await loadedData;
     numRange = songRange.options[songRange.selectedIndex].value;
-    console.log(songOrder(data, numRange[0], numRange[2]));
-    console.log(howPicked(data, pickAmt.options[pickAmt.selectedIndex].value))
-})
+    let songNameList =  howPicked(data, pickAmt.options[pickAmt.selectedIndex].value);
+    let songOrderList = songOrder(data, numRange[0], numRange[2]);
+    for (x = 0; x < songNameList.length; x++) {
+        if (songOrderList.includes(songNameList[x][0])) {
+        let newLi = document.createElement('li');
+        ul.appendChild(newLi);
+        if (data.songs[x].issues !== "") {
+            newLi.innerHTML = ("<div class='Warning'><div class='ErrorMessage'>" + data.songs[x].issues + "</div></div><strong>" + songNameList[x][0] + "</strong>: " + negNames() + ' ,  ' + data.songs[x].songOrder + ' song');
+        } else {
+            newLi.innerHTML = ("<div ></div><strong>" + songNameList[x][0] + "</strong>: " + negNames(songNameList[x][1]) + ' ,  ' + data.songs[x].songOrder + ' song');
+        }
+    //    newLi.textContent = (songNameList[x][0] + " : " + negNames() + ' ,  ' + data.songs[x].songOrder + ' song');
+        if (songNameList[x][1] > 30 || songNameList[x][1] === "Not Used Yet")    {
+            newLi.style.color = 'rgb(3, 92, 3)';
+        } else {}
+
+    } else {}}
+}
+showAll.addEventListener('click', populateAll)
+populateAll();
+async function pickingOne() {
+    ul.innerHTML = "";
+    const data = await loadedData;
+    let numRange = songRange.options[songRange.selectedIndex].value;
+    let songNameList =  howPicked(data, pickAmt.options[pickAmt.selectedIndex].value);
+    let songOrderList = songOrder(data, numRange[0], numRange[2]);
+
+    let truePool = []
+ async function favoriteList() {
+        return new Promise((resolve) => {
+        for (x = 0; x < songNameList.length; x++) {
+            if (songOrderList.includes(songNameList[x][0]) && songNameList[x][1] > 30 ){
+            truePool.push([songNameList[x][0], songNameList[x][1], songNameList[x][2]])
+        } else {} 
+        
+        }
+        resolve(truePool);
+    })};
+    function showFavorite() {
+        console.log(truePool)
+        let pickedIndex = (Math.floor(Math.random() * truePool.length)) - 1;
+        console.log(pickedIndex)
+        console.log(truePool[pickedIndex]);
+        const newLi = document.createElement('li');
+        ul.appendChild(newLi);
+            newLi.innerHTML = "<strong>" + truePool[pickedIndex][0] + "</strong>: " + negNames(truePool[pickedIndex][1]);
+    }
+favoriteList().then(showFavorite)
+
+}
+pickOne.addEventListener('click', pickingOne);
