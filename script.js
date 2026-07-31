@@ -106,16 +106,15 @@ async function pickingOne() {
         }
         resolve(truePool);
     })};
-    function showFavorite() {
-        console.log(truePool)
-        let pickedIndex = (Math.floor(Math.random() * truePool.length)) - 1;
-        console.log(pickedIndex)
-        console.log(truePool[pickedIndex]);
+function randomNum(lengthAmt) {
+        return Math.round(Math.random() * (lengthAmt - 1))
+}
+async function showFavorite() {
+        let pickedIndex = randomNum(truePool.length);
         const newLi = document.createElement('li');
         ul.appendChild(newLi);
-            newLi.innerHTML = "<strong>" + truePool[pickedIndex][0] + "</strong>: " + negNames(truePool[pickedIndex][1]);
+        newLi.innerHTML = "<strong>" + truePool[pickedIndex][0] + "</strong>: " + negNames(truePool[pickedIndex][1]);
     }
-favoriteList().then(showFavorite)
-
+favoriteList().then(showFavorite(truePool))
 }
 pickOne.addEventListener('click', pickingOne);
