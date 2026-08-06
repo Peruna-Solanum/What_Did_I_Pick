@@ -51,7 +51,7 @@ function howPicked(data, order) {
 function songOrder(data, num1, num2) {
     songNameList = []
     for (x = 0; x < data.songs.length; x++) {
-        if (data.songs[x].songOrder >= num1 && data.songs[x].songOrder < num2) {
+        if (data.songs[x].songOrder >= num1 && data.songs[x].songOrder < num2 || data.songs[x].songOrder === "") {
             songNameList.push(data.songs[x].name)
         } else {}
     }
