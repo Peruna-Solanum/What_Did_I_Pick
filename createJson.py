@@ -31,6 +31,8 @@ def create_json(reference_file, new_file_name):
             if (x[y] == "None"):
                 x[y] == ""
                 y += 1
+            else:
+                y += 1
             file_contents = file_contents + '{"name": "'+ str(x[0]) + '","songOrder": "'+ str(x[1]) +'", "date1": "' +  str(x[2]) +'", "date2": "' +  str(x[3]) +'", "date3": "' +  str(x[4]) +'", "date4": "' + str(x[5]) +'", "issues": "' +  str(x[6]) +'"}, \n'
         new_json = open((new_file_name + '.json'), "x")
         new_json.write(str(file_contents[:-3] + ']}'))
